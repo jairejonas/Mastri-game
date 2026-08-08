@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>MASTRI — Prototype 11.0</title>
+<title>MASTRI — Prototype 12.0</title>
 
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#05070a">
@@ -151,10 +151,10 @@ body{
 <div id="hud">
 <div class="top"><div class="name">MASTRI</div><div class="bar"><div id="hp" class="fill hp" style="width:100%"></div></div><div class="bar"><div id="energy" class="fill en" style="width:100%"></div></div></div>
 <div class="mission"><b>ARMED ROBBERY</b><br>Stop the criminals and protect civilians.<br><br>Wave <span id="wave">1</span>/2<br>Threats stopped: <span id="kills">0</span><br>Civilians safe: <span id="civs">0</span>/6<br><span id="runnerLine">Runner: <span id="runnerStatus">ACTIVE</span></span></div>
-<div class="tip" id="tip"><b>TUTORIAL</b><br>You have a 2.5-second safe-start window. REDIRECT reflects successful incoming attacks back at the attacker. Watch for yellow gunfire aim-lines and orange Brawler windups. DODGE gives a brief evasive window; REDIRECT counters and returns damage. ATTACK has light melee assist and a stronger third-hit kinetic finisher. Clear the first group, then respond to incoming reinforcements. The BRAWLER pursues continuously. GUNMEN now reposition and strafe to maintain range. The white ring shows the enemy currently targeted by ATTACK and SLIP. Mastri's reserve recharges after a short period without power use. Move close to civilians and stay near them briefly to secure them automatically. SLIP fully suppresses enemy attacks; interrupting an attack windup earns a CONTROL bonus. Red danger rings identify threatened civilians. The white target ring prioritizes urgent threats, and tightly timed Redirects earn PERFECT REDIRECT bonuses. The RUNNER will not begin escaping until the countdown ends. You now have a longer chase window; use SLIP to interrupt his escape and close the distance.</div>
+<div class="tip" id="tip"><b>TUTORIAL</b><br>You have a 2.5-second safe-start window. REDIRECT reflects successful incoming attacks back at the attacker. Watch for yellow gunfire aim-lines and orange Brawler windups. DODGE gives a brief evasive window; REDIRECT counters and returns damage. ATTACK has light melee assist and a stronger third-hit kinetic finisher. Clear the first group, then respond to incoming reinforcements. The BRAWLER pursues continuously. GUNMEN now reposition and strafe to maintain range. The white ring shows the enemy currently targeted by ATTACK and SLIP. Mastri's reserve recharges after a short period without power use. Move close to civilians and stay near them briefly to secure them automatically. SLIP fully suppresses enemy attacks; interrupting an attack windup earns a CONTROL bonus. Red danger rings identify threatened civilians. Urgent smart targets use a gold ring. Rapid enemy takedowns build a short Takedown Chain bonus without adding another button. The RUNNER will not begin escaping until the countdown ends. You now have a longer chase window; use SLIP to interrupt his escape and close the distance.</div>
 <div id="stick"><div id="nub"></div></div>
 <button id="slip" class="btn">SLIP</button><button id="redirect" class="btn">REDIRECT</button><button id="launch" class="btn">FLIGHT</button><button id="dodge" class="btn">DODGE</button><button id="atk" class="btn">ATTACK</button>
-<div id="score">Energy efficiency matters.</div><div id="comboHud" style="display:none;position:absolute;left:50%;transform:translateX(-50%);top:calc(48px + var(--safe-top));font-size:18px;font-weight:800;letter-spacing:2px;color:#f0b92f;text-shadow:0 2px 5px #000"></div><div id="threatArrow" style="display:none;position:absolute;z-index:4;font-size:28px;color:#ff5a4f;text-shadow:0 2px 5px #000;pointer-events:none">▲</div><div id="flightState" style="position:absolute;left:50%;transform:translateX(-50%);top:calc(18px + var(--safe-top));font-size:12px;letter-spacing:2px;color:#f0b92f">GROUND</div><div id="waveBanner" style="display:none;position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);font-size:32px;font-weight:900;letter-spacing:4px;color:#fff;text-shadow:0 3px 10px #000;pointer-events:none"></div><div id="alertHud" style="display:none;position:absolute;left:50%;top:28%;transform:translateX(-50%);padding:7px 11px;border-radius:6px;background:#090c10dd;border:1px solid #666;font-size:12px;font-weight:800;letter-spacing:1px;color:#fff;text-shadow:0 2px 4px #000;pointer-events:none"></div><div id="reserveHud" style="position:absolute;left:calc(18px + var(--safe-left));bottom:calc(14px + var(--safe-bottom));font-size:10px;letter-spacing:1px;color:#bbb;pointer-events:none">RESERVE: READY</div>
+<div id="score">Energy efficiency matters.</div><div id="comboHud" style="display:none;position:absolute;left:50%;transform:translateX(-50%);top:calc(48px + var(--safe-top));font-size:18px;font-weight:800;letter-spacing:2px;color:#f0b92f;text-shadow:0 2px 5px #000"></div><div id="threatArrow" style="display:none;position:absolute;z-index:4;font-size:28px;color:#ff5a4f;text-shadow:0 2px 5px #000;pointer-events:none">▲</div><div id="flightState" style="position:absolute;left:50%;transform:translateX(-50%);top:calc(18px + var(--safe-top));font-size:12px;letter-spacing:2px;color:#f0b92f">GROUND</div><div id="waveBanner" style="display:none;position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);font-size:32px;font-weight:900;letter-spacing:4px;color:#fff;text-shadow:0 3px 10px #000;pointer-events:none"></div><div id="objectiveHud" style="position:absolute;left:50%;top:calc(50px + var(--safe-top));transform:translateX(-50%);font-size:11px;font-weight:800;letter-spacing:1px;color:#f0b92f;text-shadow:0 2px 4px #000;pointer-events:none">OBJECTIVE: SECURE CIVILIANS</div><div id="alertHud" style="display:none;position:absolute;left:50%;top:28%;transform:translateX(-50%);padding:7px 11px;border-radius:6px;background:#090c10dd;border:1px solid #666;font-size:12px;font-weight:800;letter-spacing:1px;color:#fff;text-shadow:0 2px 4px #000;pointer-events:none"></div><div id="reserveHud" style="position:absolute;left:calc(18px + var(--safe-left));bottom:calc(14px + var(--safe-bottom));font-size:10px;letter-spacing:1px;color:#bbb;pointer-events:none">RESERVE: READY</div>
 </div>
 
 <div id="rotateNotice">
@@ -164,7 +164,7 @@ body{
   </div>
 </div>
 
-<div id="start"><div class="card"><div class="logo">MASTRI</div><div class="sub">PROTOTYPE 11.0</div><p>ARMED ROBBERY — HARLEM</p><p class="small">Mobile landscape prototype. Protect civilians and stop the robbery. Civilians are secured automatically when Mastri stays close. Use ATTACK, SLIP, REDIRECT, DODGE, and FLIGHT while managing his internal reserve. Slipped enemies cannot attack until they regain their footing. Civilian danger warnings and smart targeting help prioritize the encounter. Attacking a slipped enemy converts control into a CONTROL STRIKE.</p><button class="startbtn" onclick="startGame()">START MISSION</button></div></div>
+<div id="start"><div class="card"><div class="logo">MASTRI</div><div class="sub">PROTOTYPE 12.0</div><p>ARMED ROBBERY — HARLEM</p><p class="small">Mobile landscape prototype. Protect civilians and stop the robbery. Civilians are secured automatically when Mastri stays close. Use ATTACK, SLIP, REDIRECT, DODGE, and FLIGHT while managing his internal reserve. Slipped enemies cannot attack until they regain their footing. Civilian danger warnings and smart targeting help prioritize the encounter. Attacking a slipped enemy converts control into a CONTROL STRIKE. The objective display changes automatically as the encounter develops.</p><button class="startbtn" onclick="startGame()">START MISSION</button></div></div>
 <script>
 const c=document.getElementById('g'),x=c.getContext('2d'); let W,H;
 function resize(){
@@ -209,10 +209,10 @@ function normalizeViewportScale(){
   resize();
 }
 window.addEventListener('pageshow', normalizeViewportScale);
-let running=false, energy=100,hp=100,kills=0,score=0, redirect=0,launch=0,shake=0,flight=0,combo=0,comboTimer=0,pulse=0,startGrace=0,runnerEscaped=false,missionFailed=false,dodge=0,dodgeCd=0,hitText=[],comboFlash=0,wave=1,waveDelay=0,waveBannerTimer=0,energyRegenDelay=0,perfectRedirects=0,dodges=0,damageTaken=0,maxCombo=0,airHits=0,civiliansSaved=0,civiliansLost=0,alertText='',alertTimer=0,waveSlow=0,controlStrikes=0,perfectRedirectBonus=0;
+let running=false, energy=100,hp=100,kills=0,score=0, redirect=0,launch=0,shake=0,flight=0,combo=0,comboTimer=0,pulse=0,startGrace=0,runnerEscaped=false,missionFailed=false,dodge=0,dodgeCd=0,hitText=[],comboFlash=0,wave=1,waveDelay=0,waveBannerTimer=0,energyRegenDelay=0,perfectRedirects=0,dodges=0,damageTaken=0,maxCombo=0,airHits=0,civiliansSaved=0,civiliansLost=0,alertText='',alertTimer=0,waveSlow=0,controlStrikes=0,perfectRedirectBonus=0,takedownStreak=0,takedownTimer=0,missionPhase='SECURE';
 let p={x:W*.5,y:H*.76,r:22,vx:0,vy:0}, joy={x:0,y:0};
 let enemies=[], civilians=[];
-function reset(){flight=0;launch=0;redirect=0;dodge=0;dodgeCd=0;combo=0;comboTimer=0;pulse=0;shake=0;joy.x=0;joy.y=0;p.x=W*.5;p.y=H*.76;energy=100;hp=100;kills=0;score=0;startGrace=2.5;runnerEscaped=false;missionFailed=false;wave=1;waveDelay=0;waveBannerTimer=0;energyRegenDelay=0;perfectRedirects=0;dodges=0;damageTaken=0;maxCombo=0;airHits=0;civiliansSaved=0;civiliansLost=0;alertText='';alertTimer=0;waveSlow=0;controlStrikes=0;perfectRedirectBonus=0;
+function reset(){flight=0;launch=0;redirect=0;dodge=0;dodgeCd=0;combo=0;comboTimer=0;pulse=0;shake=0;joy.x=0;joy.y=0;p.x=W*.5;p.y=H*.76;energy=100;hp=100;kills=0;score=0;startGrace=2.5;runnerEscaped=false;missionFailed=false;wave=1;waveDelay=0;waveBannerTimer=0;energyRegenDelay=0;perfectRedirects=0;dodges=0;damageTaken=0;maxCombo=0;airHits=0;civiliansSaved=0;civiliansLost=0;alertText='';alertTimer=0;waveSlow=0;controlStrikes=0;perfectRedirectBonus=0;takedownStreak=0;takedownTimer=0;missionPhase='SECURE';
 enemies=[{x:W*.5,y:H*.28,h:3,t:'GUNMAN',slip:0,recover:0,fireCd:1.25,telegraph:0,strafe:1,strafeCd:1.2},{x:W*.31,y:H*.39,h:3,t:'BRAWLER',slip:0,recover:0,atkCd:1.0,windup:0},{x:W*.66,y:H*.54,h:2,t:'RUNNER',slip:0,recover:0,escapeTimer:0}];
 civilians=[
   {x:W*.15,y:H*.28,state:'DANGER',rescue:0,h:2,evacX:W*.06},
@@ -257,6 +257,15 @@ function nearest(){
     if(priority<best){best=priority;bestDist=dist;n=e}
   }
   return [n,bestDist];
+}
+function registerTakedown(e){
+  takedownStreak=(takedownTimer>0)?takedownStreak+1:1;
+  takedownTimer=3.0;
+  let bonus=Math.min(150,(takedownStreak-1)*30);
+  if(bonus>0){
+    score+=bonus;
+    hitText.push({x:e.x,y:e.y-36,text:'TAKEDOWN CHAIN +'+bonus,life:.9});
+  }
 }
 function showAlert(text,time=.9){
   alertText=text;
@@ -336,7 +345,7 @@ function attack(){
    clampEnemy(e);
 
    hitText.push({x:e.x,y:e.y-18,text:combo===3?'KINETIC +'+dmg:'-'+dmg,life:.65});
-   if(e.h<=0){kills++;score+=150}
+   if(e.h<=0){kills++;score+=150;registerTakedown(e)}
  }
 }
 function slip(){
@@ -420,6 +429,7 @@ x.fillStyle='#d6a94a55';for(let b=0;b<10;b++){for(let j=0;j<3;j++)x.fillRect(b*W
 }
 function circle(o,col,label){x.fillStyle=col;x.beginPath();x.arc(o.x,o.y,o.r||15,0,Math.PI*2);x.fill();if(label){x.fillStyle='#fff';x.font='11px Arial';x.textAlign='center';x.fillText(label,o.x,o.y-24)}}
 function update(dt){
+takedownTimer=Math.max(0,takedownTimer-dt);if(takedownTimer<=0)takedownStreak=0;
 alertTimer=Math.max(0,alertTimer-dt);
 if(alertTimer<=0)document.getElementById('alertHud').style.display='none';
 waveSlow=Math.max(0,waveSlow-dt);
@@ -488,10 +498,19 @@ if(e.slip>0){
   }
 }else if(e.t==='BRAWLER'){
   // Brawler relentlessly pursues Mastri at any distance, including during flight.
+  let [focusEnemy]=nearest();
+  let distracted=focusEnemy && focusEnemy!==e && Math.hypot(focusEnemy.x-p.x,focusEnemy.y-p.y)>110;
   let chaseSpeed = d>320 ? 58 : (d>180 ? 44 : 30);
+  if(distracted)chaseSpeed+=8;
   e.x+=dx/d*chaseSpeed*enemyDt;
   e.y+=dy/d*chaseSpeed*enemyDt;
 }else if(e.t==='GUNMAN'){
+  // Gunman maintains range and reacts to nearby allies losing footing.
+  let slippedAlly=enemies.find(a=>a!==e&&a.h>0&&a.slip>0&&Math.hypot(a.x-e.x,a.y-e.y)<120);
+  if(slippedAlly){
+    let ax=e.x-slippedAlly.x,ay=e.y-slippedAlly.y,am=Math.hypot(ax,ay)||1;
+    e.x+=ax/am*24*enemyDt;e.y+=ay/am*24*enemyDt;
+  }
   // Gunman tries to maintain a useful firing distance instead of standing still.
   e.strafeCd=Math.max(0,(e.strafeCd||0)-enemyDt);
   if(e.strafeCd<=0){
@@ -536,7 +555,7 @@ if(e.t==='GUNMAN'&&startGrace<=0&&e.h>0){
         }else{
           hitText.push({x:e.x,y:e.y-20,text:'REDIRECT -1',life:.7});
         }
-        if(e.h<=0){kills++;score+=150}
+        if(e.h<=0){kills++;score+=150;registerTakedown(e)}
       }else if(dodge<=0){hp-=5;damageTaken+=5;shake=4;hitText.push({x:p.x,y:p.y-28,text:'-5 HP',life:.7})}else{score+=20}
       e.fireCd=1.35;
     }
@@ -579,7 +598,7 @@ if(e.t==='BRAWLER'){
           }else{
             hitText.push({x:e.x,y:e.y-20,text:'REDIRECT -1',life:.7});
           }
-          if(e.h<=0){kills++;score+=150}
+          if(e.h<=0){kills++;score+=150;registerTakedown(e)}
         }else if(dodge<=0){
           hp-=8;damageTaken+=8;shake=6;e.atkCd=1.15;hitText.push({x:p.x,y:p.y-28,text:'-8 HP',life:.7});
         }else{
@@ -645,6 +664,18 @@ else if(energy<20)rh.textContent='LOW RESERVE';
 else rh.textContent='';
 rh.style.color=energy<20?'#ffcf4a':'#bbb';
 document.getElementById('hp').style.width=hp+'%';document.getElementById('kills').textContent=kills;document.getElementById('civs').textContent=civiliansSaved;
+let objective=document.getElementById('objectiveHud');
+let activeRunner=enemies.find(e=>e.t==='RUNNER'&&e.h>0);
+let threatened=civilians.some(c=>c.state==='DANGER'&&enemies.some(e=>e.h>0&&e.slip<=0&&Math.hypot(c.x-e.x,c.y-e.y)<155));
+if(activeRunner && activeRunner.y<H*.36){
+  missionPhase='INTERCEPT';objective.textContent='OBJECTIVE: INTERCEPT RUNNER';
+}else if(threatened){
+  missionPhase='PROTECT';objective.textContent='OBJECTIVE: PROTECT CIVILIANS';
+}else if(civiliansSaved<6 && wave===1){
+  missionPhase='SECURE';objective.textContent='OBJECTIVE: SECURE CIVILIANS';
+}else{
+  missionPhase='NEUTRALIZE';objective.textContent='OBJECTIVE: NEUTRALIZE THREATS';
+}
 let runner=enemies.find(e=>e.t==='RUNNER');
 let rs=document.getElementById('runnerStatus');
 let rl=document.getElementById('runnerLine');
@@ -696,9 +727,9 @@ if(running && wave===1 && enemies.length && enemies.every(e=>e.h<=0)){
     waveBannerTimer=1.2;
 
     enemies=[
-      {x:W*.34,y:H*.31,h:3,t:'GUNMAN',slip:0,recover:0,fireCd:1.0,telegraph:0,strafe:-1,strafeCd:1.0},
-      {x:W*.62,y:H*.36,h:3,t:'BRAWLER',slip:0,recover:0,atkCd:.8,windup:0},
-      {x:W*.72,y:H*.55,h:2,t:'RUNNER',slip:0,recover:0,escapeTimer:0}
+      {x:W*.27,y:H*.29,h:3,t:'GUNMAN',slip:0,recover:0,fireCd:1.0,telegraph:0,strafe:-1,strafeCd:1.0},
+      {x:W*.61,y:H*.42,h:3,t:'BRAWLER',slip:0,recover:0,atkCd:.8,windup:0},
+      {x:W*.80,y:H*.58,h:2,t:'RUNNER',slip:0,recover:0,escapeTimer:0}
     ];
     runnerEscaped=false;
 
@@ -726,7 +757,7 @@ if(running && wave===2 && enemies.length && enemies.every(e=>e.h<=0)){
   let controlBonus=(civiliansLost===0 && damageTaken<=10)?250:0;
   let ratingPoints=score + civilianBonus + controlBonus + perfectRedirectBonus*90 + controlStrikes*70 + perfectRedirects*45 + maxCombo*35 + airHits*20 + efficiency*2 - damageTaken*18;
   let rating=ratingPoints>=1900?'S':ratingPoints>=1350?'A':ratingPoints>=850?'B':'C';
-  document.querySelector('.card').innerHTML=`<div class="logo">MISSION COMPLETE</div><div class="sub">HERO RATING</div><p style="font-size:40px;color:#f0b92f">${rating}</p><p>Score: ${score}</p><p class="small">Civilians safe: ${civiliansSaved}/6 • Lost: ${civiliansLost}<br>${controlBonus?'Control bonus: +250<br>':''}Redirects: ${perfectRedirects} • Perfect: ${perfectRedirectBonus}<br>Control strikes: ${controlStrikes} • Max combo: ${maxCombo}<br>Air hits: ${airHits} • Damage taken: ${damageTaken}<br>Reserve remaining: ${efficiency}%</p><button class="startbtn" onclick="startGame()">REPLAY</button>`;
+  document.querySelector('.card').innerHTML=`<div class="logo">MISSION COMPLETE</div><div class="sub">HERO RATING</div><p style="font-size:40px;color:#f0b92f">${rating}</p><p>Score: ${score}</p><p class="small">Civilians safe: ${civiliansSaved}/6 • Lost: ${civiliansLost}<br>${controlBonus?'Control bonus: +250<br>':''}Redirects: ${perfectRedirects} • Perfect: ${perfectRedirectBonus}<br>Control strikes: ${controlStrikes} • Max combo: ${maxCombo}<br>Threat control: ${civiliansLost===0?'SECURE':'COMPROMISED'}<br>Air hits: ${airHits} • Damage taken: ${damageTaken}<br>Reserve remaining: ${efficiency}%</p><button class="startbtn" onclick="startGame()">REPLAY</button>`;
 }
 
 document.getElementById('wave').textContent=wave;
@@ -769,7 +800,8 @@ let [currentTarget,currentTargetDist]=nearest();
 for(const e of enemies)if(e.h>0){
  circle({...e,r:16},e.slip>0?'#28a9e8':'#b33b32',e.t);
  if(e===currentTarget){
-   x.strokeStyle='#ffffff99';x.lineWidth=2;x.setLineDash([5,5]);x.beginPath();x.arc(e.x,e.y,27,0,Math.PI*2);x.stroke();x.setLineDash([]);
+   let urgent=(e.t==='RUNNER'&&e.y<H*.34)||(e.telegraph||0)>0||(e.windup||0)>0||civilians.some(c=>c.state==='DANGER'&&Math.hypot(c.x-e.x,c.y-e.y)<155);
+   x.strokeStyle=urgent?'#f0b92f':'#ffffff99';x.lineWidth=urgent?3:2;x.setLineDash([5,5]);x.beginPath();x.arc(e.x,e.y,27,0,Math.PI*2);x.stroke();x.setLineDash([]);
  }
  if(e.slip>0){
    x.strokeStyle='#56c8ff';x.lineWidth=3;x.beginPath();x.arc(e.x,e.y,22,0,Math.PI*2);x.stroke();
