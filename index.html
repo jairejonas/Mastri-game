@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>MASTRI — Prototype 3.1</title>
+<title>MASTRI — Prototype 3.3</title>
 
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#05070a">
@@ -143,7 +143,7 @@ body{
 <div id="hud">
 <div class="top"><div class="name">MASTRI</div><div class="bar"><div id="hp" class="fill hp" style="width:100%"></div></div><div class="bar"><div id="energy" class="fill en" style="width:100%"></div></div></div>
 <div class="mission"><b>ARMED ROBBERY</b><br>Stop the criminals and protect civilians.<br><br>Criminals: <span id="kills">0</span>/3<br>Runner status: <span id="runnerStatus">ACTIVE</span><br>Civilians protected: <span id="civs">6</span>/6<br><b>Bonus:</b> No major damage</div>
-<div class="tip" id="tip"><b>TUTORIAL</b><br>You have a 2.5-second safe-start window. The RUNNER will not begin escaping until the countdown ends. Use SLIP to disrupt him, then close the distance and attack.</div>
+<div class="tip" id="tip"><b>TUTORIAL</b><br>You have a 2.5-second safe-start window. The RUNNER will not begin escaping until the countdown ends. You now have a longer chase window; use SLIP to interrupt his escape and close the distance.</div>
 <div id="stick"><div id="nub"></div></div>
 <button id="slip" class="btn">SLIP</button><button id="redirect" class="btn">REDIRECT</button><button id="launch" class="btn">FLIGHT</button><button id="atk" class="btn">ATTACK</button>
 <div id="score">Energy efficiency matters.</div><div id="threatArrow" style="display:none;position:absolute;z-index:4;font-size:28px;color:#ff5a4f;text-shadow:0 2px 5px #000;pointer-events:none">▲</div><div id="flightState" style="position:absolute;left:50%;transform:translateX(-50%);top:calc(18px + var(--safe-top));font-size:12px;letter-spacing:2px;color:#f0b92f">GROUND</div>
@@ -156,7 +156,7 @@ body{
   </div>
 </div>
 
-<div id="start"><div class="card"><div class="logo">MASTRI</div><div class="sub">PROTOTYPE 3.1</div><p>ARMED ROBBERY — HARLEM</p><p class="small">Mobile landscape prototype. Stop three criminals. SLIP disrupts traction, REDIRECT creates a defensive field, and LAUNCH produces a kinetic burst. Abilities consume energy.</p><button class="startbtn" onclick="startGame()">START MISSION</button></div></div>
+<div id="start"><div class="card"><div class="logo">MASTRI</div><div class="sub">PROTOTYPE 3.3</div><p>ARMED ROBBERY — HARLEM</p><p class="small">Mobile landscape prototype. Stop three criminals. SLIP disrupts traction, REDIRECT creates a defensive field, and LAUNCH produces a kinetic burst. Abilities consume energy.</p><button class="startbtn" onclick="startGame()">START MISSION</button></div></div>
 <script>
 const c=document.getElementById('g'),x=c.getContext('2d'); let W,H;
 function resize(){
@@ -181,7 +181,7 @@ let running=false, energy=100,hp=100,kills=0,score=0, redirect=0,launch=0,shake=
 let p={x:W*.5,y:H*.76,r:22,vx:0,vy:0}, joy={x:0,y:0};
 let enemies=[], civilians=[];
 function reset(){p.x=W*.5;p.y=H*.76;energy=100;hp=100;kills=0;score=0;startGrace=2.5;runnerEscaped=false;missionFailed=false;
-enemies=[{x:W*.5,y:H*.28,h:3,t:'GUNMAN',slip:0},{x:W*.31,y:H*.39,h:3,t:'BRAWLER',slip:0,atkCd:1.0},{x:W*.68,y:H*.46,h:2,t:'RUNNER',slip:0,escapeTimer:0}];
+enemies=[{x:W*.5,y:H*.28,h:3,t:'GUNMAN',slip:0},{x:W*.31,y:H*.39,h:3,t:'BRAWLER',slip:0,atkCd:1.0},{x:W*.66,y:H*.54,h:2,t:'RUNNER',slip:0,escapeTimer:0}];
 civilians=[.12,.2,.27,.73,.81,.89].map((a,i)=>({x:W*a,y:H*(.2+(i%3)*.09)}));}
 
 async function requestGameFullscreen(){
@@ -221,7 +221,7 @@ function attack(){
    if(e.h<=0){kills++;score+=150}
  }
 }
-function slip(){let [e,d]=nearest();if(e&&d<230&&spend(12)){e.slip=2.5;score+=25}}
+function slip(){let [e,d]=nearest();if(e&&d<230&&spend(12)){e.slip=e.t==='RUNNER'?3.2:2.5;score+=25}}
 function redir(){if(spend(16)){redirect=.8;score+=15}}
 function launchFn(){
   // Launch is a traversal control only.
@@ -262,14 +262,22 @@ let speed=190*(launch>0?2.2:(flight>0?1.55:1));p.x+=joy.x*speed*dt;p.y+=joy.y*sp
 energy=Math.min(100,energy+6*dt);redirect=Math.max(0,redirect-dt);launch=Math.max(0,launch-dt);
 for(const e of enemies){if(e.h<=0)continue;let dx=p.x-e.x,dy=p.y-e.y,d=Math.hypot(dx,dy)||1;if(e.slip>0){
   e.slip-=dt;
-  e.x-=dx/d*100*dt;
-  e.y-=dy/d*100*dt;
+  if(e.t==='RUNNER'){
+    // Runner loses traction mostly in place. Small lateral skid only;
+    // never propel him toward the escape edge.
+    let lateral=Math.sign(e.x-p.x)||1;
+    e.x+=lateral*12*dt;
+    e.y+=8*dt; // tiny backward/down-street slide, away from escape
+  }else{
+    e.x-=dx/d*100*dt;
+    e.y-=dy/d*100*dt;
+  }
 }else if(e.t==='RUNNER'){
   // Runner waits through the opening grace period, then starts fleeing.
   if(startGrace<=0){
-    let fleeSpeed=50;
+    let fleeSpeed=36;
     e.y-=fleeSpeed*dt;
-    if(d<180){ e.x-=dx/d*24*dt; }
+    if(d<160){ e.x-=dx/d*16*dt; }
     e.escapeTimer=(e.escapeTimer||0)+dt;
   }
 }else if(d<260){
@@ -297,7 +305,7 @@ if(e.t==='RUNNER' && e.h>0 && startGrace<=0){
   // If the runner reaches the escape edge and stays there briefly, the mission fails.
   if(e.y <= H*.18 + 20){
     e.escapeTimer=(e.escapeTimer||0)+dt;
-    if(e.escapeTimer>1.25){
+    if(e.escapeTimer>2.0){
       runnerEscaped=true;
       missionFailed=true;
       running=false;
