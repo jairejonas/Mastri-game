@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>MASTRI — Prototype 4.1</title>
+<title>MASTRI — Prototype 4.3</title>
 
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#05070a">
@@ -143,10 +143,10 @@ body{
 <div id="hud">
 <div class="top"><div class="name">MASTRI</div><div class="bar"><div id="hp" class="fill hp" style="width:100%"></div></div><div class="bar"><div id="energy" class="fill en" style="width:100%"></div></div></div>
 <div class="mission"><b>ARMED ROBBERY</b><br>Stop the criminals and protect civilians.<br><br>Criminals: <span id="kills">0</span>/3<br>Runner status: <span id="runnerStatus">ACTIVE</span><br>Civilians protected: <span id="civs">6</span>/6<br><b>Bonus:</b> No major damage</div>
-<div class="tip" id="tip"><b>TUTORIAL</b><br>You have a 2.5-second safe-start window. REDIRECT reflects successful incoming attacks back at the attacker. Watch for yellow gunfire aim-lines and orange Brawler windups. DODGE gives a brief evasive window; REDIRECT counters and returns damage. The RUNNER will not begin escaping until the countdown ends. You now have a longer chase window; use SLIP to interrupt his escape and close the distance.</div>
+<div class="tip" id="tip"><b>TUTORIAL</b><br>You have a 2.5-second safe-start window. REDIRECT reflects successful incoming attacks back at the attacker. Watch for yellow gunfire aim-lines and orange Brawler windups. DODGE gives a brief evasive window; REDIRECT counters and returns damage. ATTACK now has light melee assist and a stronger third-hit kinetic finisher. The RUNNER will not begin escaping until the countdown ends. You now have a longer chase window; use SLIP to interrupt his escape and close the distance.</div>
 <div id="stick"><div id="nub"></div></div>
 <button id="slip" class="btn">SLIP</button><button id="redirect" class="btn">REDIRECT</button><button id="launch" class="btn">FLIGHT</button><button id="dodge" class="btn">DODGE</button><button id="atk" class="btn">ATTACK</button>
-<div id="score">Energy efficiency matters.</div><div id="threatArrow" style="display:none;position:absolute;z-index:4;font-size:28px;color:#ff5a4f;text-shadow:0 2px 5px #000;pointer-events:none">▲</div><div id="flightState" style="position:absolute;left:50%;transform:translateX(-50%);top:calc(18px + var(--safe-top));font-size:12px;letter-spacing:2px;color:#f0b92f">GROUND</div>
+<div id="score">Energy efficiency matters.</div><div id="comboHud" style="display:none;position:absolute;left:50%;transform:translateX(-50%);top:calc(48px + var(--safe-top));font-size:18px;font-weight:800;letter-spacing:2px;color:#f0b92f;text-shadow:0 2px 5px #000"></div><div id="threatArrow" style="display:none;position:absolute;z-index:4;font-size:28px;color:#ff5a4f;text-shadow:0 2px 5px #000;pointer-events:none">▲</div><div id="flightState" style="position:absolute;left:50%;transform:translateX(-50%);top:calc(18px + var(--safe-top));font-size:12px;letter-spacing:2px;color:#f0b92f">GROUND</div>
 </div>
 
 <div id="rotateNotice">
@@ -156,7 +156,7 @@ body{
   </div>
 </div>
 
-<div id="start"><div class="card"><div class="logo">MASTRI</div><div class="sub">PROTOTYPE 4.1</div><p>ARMED ROBBERY — HARLEM</p><p class="small">Mobile landscape prototype. Stop three criminals. SLIP disrupts traction, REDIRECT creates a defensive field, and LAUNCH produces a kinetic burst. Abilities consume energy.</p><button class="startbtn" onclick="startGame()">START MISSION</button></div></div>
+<div id="start"><div class="card"><div class="logo">MASTRI</div><div class="sub">PROTOTYPE 4.3</div><p>ARMED ROBBERY — HARLEM</p><p class="small">Mobile landscape prototype. Stop three criminals. SLIP disrupts traction, REDIRECT creates a defensive field, and LAUNCH produces a kinetic burst. Abilities consume energy.</p><button class="startbtn" onclick="startGame()">START MISSION</button></div></div>
 <script>
 const c=document.getElementById('g'),x=c.getContext('2d'); let W,H;
 function resize(){
@@ -177,7 +177,7 @@ if(window.visualViewport){
   visualViewport.addEventListener('scroll',resize);
 }
 resize();
-let running=false, energy=100,hp=100,kills=0,score=0, redirect=0,launch=0,shake=0,flight=0,combo=0,comboTimer=0,pulse=0,startGrace=0,runnerEscaped=false,missionFailed=false,dodge=0,dodgeCd=0;
+let running=false, energy=100,hp=100,kills=0,score=0, redirect=0,launch=0,shake=0,flight=0,combo=0,comboTimer=0,pulse=0,startGrace=0,runnerEscaped=false,missionFailed=false,dodge=0,dodgeCd=0,hitText=[],comboFlash=0;
 let p={x:W*.5,y:H*.76,r:22,vx:0,vy:0}, joy={x:0,y:0};
 let enemies=[], civilians=[];
 function reset(){p.x=W*.5;p.y=H*.76;energy=100;hp=100;kills=0;score=0;startGrace=2.5;runnerEscaped=false;missionFailed=false;
@@ -213,11 +213,38 @@ function clampEnemy(e){
 function spend(n){if(energy>=n){energy-=n;return true}return false}
 function attack(){
  let [e,d]=nearest();
- if(e&&d<105){
-   combo=(comboTimer>0)?Math.min(3,combo+1):1; comboTimer=.8;
-   let dmg=combo===3?2:1; e.h-=dmg; score+=45*combo; shake=combo===3?7:3; pulse=.18;
+ if(e&&d<125){
    let dx=e.x-p.x,dy=e.y-p.y,m=Math.hypot(dx,dy)||1;
-   e.x+=dx/m*(combo===3?38:14); e.y+=dy/m*(combo===3?38:14); clampEnemy(e);
+
+   // Small melee assist/lunge so close-range attacks connect more naturally on touch.
+   if(d>62){
+     p.x+=dx/m*Math.min(22,d-62);
+     p.y+=dy/m*Math.min(22,d-62);
+   }
+
+   combo=(comboTimer>0)?Math.min(3,combo+1):1;
+   comboTimer=.85;
+   comboFlash=.2;
+
+   let dmg=combo===3?2:1;
+   e.h-=dmg;
+   score+=45*combo;
+   shake=combo===3?7:3;
+   pulse=.18;
+
+   // Runner gets only a small lateral stagger so melee never helps him escape.
+   let push=combo===3?46:18;
+   if(e.t==='RUNNER'){
+     let runnerPush=combo===3?10:5;
+     e.x+=Math.sign(dx||1)*runnerPush;
+     e.y+=6; // slight movement away from the escape edge
+   }else{
+     e.x+=dx/m*push;
+     e.y+=dy/m*push;
+   }
+   clampEnemy(e);
+
+   hitText.push({x:e.x,y:e.y-18,text:combo===3?'KINETIC +'+dmg:'-'+dmg,life:.65});
    if(e.h<=0){kills++;score+=150}
  }
 }
@@ -266,7 +293,11 @@ x.fillStyle='#d6a94a55';for(let b=0;b<10;b++){for(let j=0;j<3;j++)x.fillRect(b*W
 }
 function circle(o,col,label){x.fillStyle=col;x.beginPath();x.arc(o.x,o.y,o.r||15,0,Math.PI*2);x.fill();if(label){x.fillStyle='#fff';x.font='11px Arial';x.textAlign='center';x.fillText(label,o.x,o.y-24)}}
 function update(dt){
-comboTimer=Math.max(0,comboTimer-dt); pulse=Math.max(0,pulse-dt); startGrace=Math.max(0,startGrace-dt); dodge=Math.max(0,dodge-dt); dodgeCd=Math.max(0,dodgeCd-dt);
+comboTimer=Math.max(0,comboTimer-dt); pulse=Math.max(0,pulse-dt); startGrace=Math.max(0,startGrace-dt); dodge=Math.max(0,dodge-dt); dodgeCd=Math.max(0,dodgeCd-dt); comboFlash=Math.max(0,comboFlash-dt);
+for(const h of hitText){h.life-=dt;h.y-=18*dt}
+hitText=hitText.filter(h=>h.life>0);
+let ch=document.getElementById('comboHud');
+if(comboTimer>0&&combo>1){ch.style.display='block';ch.textContent=combo+' HIT COMBO'}else{ch.style.display='none'}
 if(flight>0){energy-=10*dt;if(energy<=0.5){energy=0;flight=0;launch=.12}}
 let speed=190*(launch>0?2.2:(flight>0?1.55:1));p.x+=joy.x*speed*dt;p.y+=joy.y*speed*dt;p.x=Math.max(20,Math.min(W-20,p.x));p.y=Math.max(H*.18,Math.min(H-20,p.y));
 energy=Math.min(100,energy+6*dt);redirect=Math.max(0,redirect-dt);launch=Math.max(0,launch-dt);
@@ -321,7 +352,7 @@ if(e.t==='BRAWLER'){
           e.h-=1;score+=45;shake=3;pulse=.22;e.atkCd=1.25;
           let bdx=p.x-e.x,bdy=p.y-e.y,bdm=Math.hypot(bdx,bdy)||1;
           e.x-=bdx/bdm*34;e.y-=bdy/bdm*34;
-          if(e.h<=0){kills++;score+=150}
+          hitText.push({x:e.x,y:e.y-20,text:'REDIRECT -1',life:.7});if(e.h<=0){kills++;score+=150}
         }else if(dodge<=0){hp-=8;shake=6;e.atkCd=1.15}else{score+=20;e.atkCd=.7}
       }else e.atkCd=.55;
     }
@@ -392,6 +423,12 @@ for(const e of enemies)if(e.h>0){
  x.fillStyle='#111';x.fillRect(e.x-20,e.y+22,40,4);x.fillStyle='#d64b3f';x.fillRect(e.x-20,e.y+22,40*(e.h/3),4)
 }
 if(redirect>0){x.strokeStyle='#b54ae8';x.lineWidth=5;x.beginPath();x.arc(p.x,p.y,43,0,Math.PI*2);x.stroke()}
+if(dodge>0){
+  x.strokeStyle='#7dff8a88';x.lineWidth=5;x.beginPath();x.arc(p.x,p.y,31,0,Math.PI*2);x.stroke();
+}
+for(const h of hitText){
+  x.save();x.globalAlpha=Math.max(0,h.life/.65);x.fillStyle=h.text.includes('REDIRECT')?'#d784ff':'#ffd36b';x.font='bold 13px Arial';x.textAlign='center';x.fillText(h.text,h.x,h.y);x.restore();
+}
 if(launch>0){x.strokeStyle='#e2a828';x.lineWidth=4;for(let i=0;i<4;i++){x.beginPath();x.moveTo(p.x,p.y+20+i*5);x.lineTo(p.x-joy.x*60+(i-2)*6,p.y-joy.y*60+70);x.stroke()}}
 x.save();x.translate(p.x,p.y);
 if(flight>0){x.shadowBlur=18;x.shadowColor='#d17a38'}
