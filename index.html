@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>MASTRI — Prototype 5.2</title>
+<title>MASTRI — Prototype 6.0</title>
 
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#05070a">
@@ -143,10 +143,10 @@ body{
 <div id="hud">
 <div class="top"><div class="name">MASTRI</div><div class="bar"><div id="hp" class="fill hp" style="width:100%"></div></div><div class="bar"><div id="energy" class="fill en" style="width:100%"></div></div></div>
 <div class="mission"><b>ARMED ROBBERY</b><br>Stop the criminals and protect civilians.<br><br>Wave: <span id="wave">1</span>/2 &nbsp; • &nbsp; Criminals stopped: <span id="kills">0</span><br>Runner status: <span id="runnerStatus">ACTIVE</span><br>Civilians protected: <span id="civs">6</span>/6<br><b>Bonus:</b> No major damage</div>
-<div class="tip" id="tip"><b>TUTORIAL</b><br>You have a 2.5-second safe-start window. REDIRECT reflects successful incoming attacks back at the attacker. Watch for yellow gunfire aim-lines and orange Brawler windups. DODGE gives a brief evasive window; REDIRECT counters and returns damage. ATTACK has light melee assist and a stronger third-hit kinetic finisher. Clear the first group, then respond to incoming reinforcements. The BRAWLER now pursues continuously, even when Mastri is far away or flying. The RUNNER will not begin escaping until the countdown ends. You now have a longer chase window; use SLIP to interrupt his escape and close the distance.</div>
+<div class="tip" id="tip"><b>TUTORIAL</b><br>You have a 2.5-second safe-start window. REDIRECT reflects successful incoming attacks back at the attacker. Watch for yellow gunfire aim-lines and orange Brawler windups. DODGE gives a brief evasive window; REDIRECT counters and returns damage. ATTACK has light melee assist and a stronger third-hit kinetic finisher. Clear the first group, then respond to incoming reinforcements. The BRAWLER pursues continuously. GUNMEN now reposition and strafe to maintain range. The white ring shows the enemy currently targeted by ATTACK and SLIP. The RUNNER will not begin escaping until the countdown ends. You now have a longer chase window; use SLIP to interrupt his escape and close the distance.</div>
 <div id="stick"><div id="nub"></div></div>
 <button id="slip" class="btn">SLIP</button><button id="redirect" class="btn">REDIRECT</button><button id="launch" class="btn">FLIGHT</button><button id="dodge" class="btn">DODGE</button><button id="atk" class="btn">ATTACK</button>
-<div id="score">Energy efficiency matters.</div><div id="comboHud" style="display:none;position:absolute;left:50%;transform:translateX(-50%);top:calc(48px + var(--safe-top));font-size:18px;font-weight:800;letter-spacing:2px;color:#f0b92f;text-shadow:0 2px 5px #000"></div><div id="threatArrow" style="display:none;position:absolute;z-index:4;font-size:28px;color:#ff5a4f;text-shadow:0 2px 5px #000;pointer-events:none">▲</div><div id="flightState" style="position:absolute;left:50%;transform:translateX(-50%);top:calc(18px + var(--safe-top));font-size:12px;letter-spacing:2px;color:#f0b92f">GROUND</div><div id="waveBanner" style="display:none;position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);font-size:32px;font-weight:900;letter-spacing:4px;color:#fff;text-shadow:0 3px 10px #000;pointer-events:none"></div>
+<div id="score">Energy efficiency matters.</div><div id="comboHud" style="display:none;position:absolute;left:50%;transform:translateX(-50%);top:calc(48px + var(--safe-top));font-size:18px;font-weight:800;letter-spacing:2px;color:#f0b92f;text-shadow:0 2px 5px #000"></div><div id="threatArrow" style="display:none;position:absolute;z-index:4;font-size:28px;color:#ff5a4f;text-shadow:0 2px 5px #000;pointer-events:none">▲</div><div id="flightState" style="position:absolute;left:50%;transform:translateX(-50%);top:calc(18px + var(--safe-top));font-size:12px;letter-spacing:2px;color:#f0b92f">GROUND</div><div id="waveBanner" style="display:none;position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);font-size:32px;font-weight:900;letter-spacing:4px;color:#fff;text-shadow:0 3px 10px #000;pointer-events:none"></div><div id="targetHud" style="position:absolute;left:50%;transform:translateX(-50%);bottom:calc(42px + var(--safe-bottom));font-size:11px;letter-spacing:1px;color:#ddd;text-shadow:0 2px 4px #000;pointer-events:none">TARGET: NONE</div>
 </div>
 
 <div id="rotateNotice">
@@ -156,7 +156,7 @@ body{
   </div>
 </div>
 
-<div id="start"><div class="card"><div class="logo">MASTRI</div><div class="sub">PROTOTYPE 5.2</div><p>ARMED ROBBERY — HARLEM</p><p class="small">Mobile landscape prototype. Stop three criminals. SLIP disrupts traction, REDIRECT creates a defensive field, and LAUNCH produces a kinetic burst. Abilities consume energy.</p><button class="startbtn" onclick="startGame()">START MISSION</button></div></div>
+<div id="start"><div class="card"><div class="logo">MASTRI</div><div class="sub">PROTOTYPE 6.0</div><p>ARMED ROBBERY — HARLEM</p><p class="small">Mobile landscape prototype. Stop three criminals. SLIP disrupts traction, REDIRECT creates a defensive field, and LAUNCH produces a kinetic burst. Abilities consume energy.</p><button class="startbtn" onclick="startGame()">START MISSION</button></div></div>
 <script>
 const c=document.getElementById('g'),x=c.getContext('2d'); let W,H;
 function resize(){
@@ -205,7 +205,7 @@ let running=false, energy=100,hp=100,kills=0,score=0, redirect=0,launch=0,shake=
 let p={x:W*.5,y:H*.76,r:22,vx:0,vy:0}, joy={x:0,y:0};
 let enemies=[], civilians=[];
 function reset(){p.x=W*.5;p.y=H*.76;energy=100;hp=100;kills=0;score=0;startGrace=2.5;runnerEscaped=false;missionFailed=false;wave=1;waveDelay=0;waveBannerTimer=0;
-enemies=[{x:W*.5,y:H*.28,h:3,t:'GUNMAN',slip:0,fireCd:1.25,telegraph:0},{x:W*.31,y:H*.39,h:3,t:'BRAWLER',slip:0,atkCd:1.0,windup:0},{x:W*.66,y:H*.54,h:2,t:'RUNNER',slip:0,escapeTimer:0}];
+enemies=[{x:W*.5,y:H*.28,h:3,t:'GUNMAN',slip:0,fireCd:1.25,telegraph:0,strafe:1,strafeCd:1.2},{x:W*.31,y:H*.39,h:3,t:'BRAWLER',slip:0,atkCd:1.0,windup:0},{x:W*.66,y:H*.54,h:2,t:'RUNNER',slip:0,escapeTimer:0}];
 civilians=[.12,.2,.27,.73,.81,.89].map((a,i)=>({x:W*a,y:H*(.2+(i%3)*.09)}));}
 
 async function requestGameFullscreen(){
@@ -347,10 +347,30 @@ for(const e of enemies){if(e.h<=0)continue;let dx=p.x-e.x,dy=p.y-e.y,d=Math.hypo
   }
 }else if(e.t==='BRAWLER'){
   // Brawler relentlessly pursues Mastri at any distance, including during flight.
-  // He accelerates slightly when very far away so he cannot become irrelevant.
   let chaseSpeed = d>320 ? 58 : (d>180 ? 44 : 30);
   e.x+=dx/d*chaseSpeed*dt;
   e.y+=dy/d*chaseSpeed*dt;
+}else if(e.t==='GUNMAN'){
+  // Gunman tries to maintain a useful firing distance instead of standing still.
+  e.strafeCd=Math.max(0,(e.strafeCd||0)-dt);
+  if(e.strafeCd<=0){
+    e.strafe*=-1;
+    e.strafeCd=1.1+Math.random()*.9;
+  }
+
+  // Back away if Mastri gets too close; creep closer if excessively far.
+  if(d<150){
+    e.x-=dx/d*36*dt;
+    e.y-=dy/d*36*dt;
+  }else if(d>300){
+    e.x+=dx/d*18*dt;
+    e.y+=dy/d*18*dt;
+  }
+
+  // Perpendicular strafe keeps the ranged enemy active and readable.
+  let px=-dy/d, py=dx/d;
+  e.x+=px*e.strafe*18*dt;
+  e.y+=py*e.strafe*18*dt;
 }else if(d<260){
   e.x+=dx/d*25*dt;
   e.y+=dy/d*25*dt;
@@ -433,6 +453,12 @@ else{rs.textContent='ACTIVE';rs.style.color='#fff'}
 
 // Directional indicator for the nearest active threat when it is near an edge.
 let [threat,td]=nearest(), arrow=document.getElementById('threatArrow');
+let th=document.getElementById('targetHud');
+if(threat){
+  th.textContent='TARGET: '+threat.t+' • '+Math.round(td)+' px';
+}else{
+  th.textContent='TARGET: NONE';
+}
 if(threat){
   let edge=42, off=threat.x<edge||threat.x>W-edge||threat.y<H*.18+edge||threat.y>H-edge;
   if(off){
@@ -463,7 +489,7 @@ if(running && wave===1 && enemies.length && enemies.every(e=>e.h<=0)){
     waveBannerTimer=1.2;
 
     enemies=[
-      {x:W*.38,y:H*.31,h:3,t:'GUNMAN',slip:0,fireCd:1.0,telegraph:0},
+      {x:W*.38,y:H*.31,h:3,t:'GUNMAN',slip:0,fireCd:1.0,telegraph:0,strafe:-1,strafeCd:1.0},
       {x:W*.64,y:H*.34,h:3,t:'BRAWLER',slip:0,atkCd:.8,windup:0}
     ];
 
@@ -502,8 +528,12 @@ if(hp<=0){
 function render(){
 x.save();if(shake>0){x.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);shake*=.85}drawCity();
 for(const q of civilians)circle({...q,r:8},'#aeb8c3');
+let [currentTarget,currentTargetDist]=nearest();
 for(const e of enemies)if(e.h>0){
  circle({...e,r:16},e.slip>0?'#28a9e8':'#b33b32',e.t);
+ if(e===currentTarget){
+   x.strokeStyle='#ffffff99';x.lineWidth=2;x.setLineDash([5,5]);x.beginPath();x.arc(e.x,e.y,27,0,Math.PI*2);x.stroke();x.setLineDash([]);
+ }
  if(e.t==='GUNMAN'&&e.telegraph>0){
    x.strokeStyle='#ffcf4a';x.lineWidth=2;x.beginPath();x.moveTo(e.x,e.y);x.lineTo(p.x,p.y);x.stroke();
    x.fillStyle='#ffcf4a';x.beginPath();x.arc(e.x,e.y,22+Math.sin(performance.now()/45)*3,0,Math.PI*2);x.stroke();
