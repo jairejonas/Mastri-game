@@ -1,4 +1,4 @@
-const CACHE = 'mastri-p13-0-v1';
+const CACHE = 'mastri-p14-0-v1';
 const ASSETS = [
   './',
   './index.html',
