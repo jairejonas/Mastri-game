@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>MASTRI — Prototype 7.0</title>
+<title>MASTRI — Prototype 7.1</title>
 
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#05070a">
@@ -29,7 +29,7 @@ canvas{display:block;width:100%;height:100%}
 #redirect{right:195px;bottom:28px;border-color:#a348d2;color:#d784ff}#slip{right:278px;bottom:95px;border-color:#28a9e8;color:#56c8ff}
 #score{position:absolute;left:50%;transform:translateX(-50%);bottom:14px;font-size:14px}
 #start{position:fixed;inset:0;background:radial-gradient(circle at 50% 35%,#18202a,#030405 70%);display:flex;align-items:center;justify-content:center;z-index:5}
-.card{text-align:center;max-width:560px;padding:35px}.logo{font-size:48px;letter-spacing:10px;color:#d47b3e;font-weight:900}.sub{letter-spacing:4px;color:#aaa;margin:10px}.startbtn{margin-top:25px;background:#b76229;color:white;border:1px solid #f0a06a;padding:15px 30px;font-size:18px;font-weight:bold}
+.card{padding-bottom:calc(28px + env(safe-area-inset-bottom));text-align:center;max-width:560px;padding:35px}.logo{font-size:48px;letter-spacing:10px;color:#d47b3e;font-weight:900}.sub{letter-spacing:4px;color:#aaa;margin:10px}.startbtn{margin-top:25px;background:#b76229;color:white;border:1px solid #f0a06a;padding:15px 30px;font-size:18px;font-weight:bold}
 .small{color:#aaa;font-size:13px;line-height:1.5}
 @media(max-width:700px){.mission{width:210px;font-size:12px}.tip{display:none}.top{width:190px}.btn{width:58px;height:58px}#slip{right:245px}}
 
@@ -137,6 +137,14 @@ body{
   #slip{right:calc(235px + var(--safe-right));bottom:calc(83px + var(--safe-bottom))}#dodge{right:calc(92px + var(--safe-right));bottom:calc(18px + var(--safe-bottom));width:50px;height:50px}
 }
 
+
+#start{padding-bottom:env(safe-area-inset-bottom);}
+#start .card{box-sizing:border-box;max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 18px);overflow:auto;}
+#start .startbtn{margin-bottom:calc(12px + env(safe-area-inset-bottom));}
+@media (orientation:landscape){
+  #start .card{padding-bottom:calc(18px + env(safe-area-inset-bottom));}
+  #start .startbtn{margin-bottom:calc(10px + env(safe-area-inset-bottom));}
+}
 </style></head>
 <body>
 <canvas id="g"></canvas>
@@ -156,7 +164,7 @@ body{
   </div>
 </div>
 
-<div id="start"><div class="card"><div class="logo">MASTRI</div><div class="sub">PROTOTYPE 7.0</div><p>ARMED ROBBERY — HARLEM</p><p class="small">Mobile landscape prototype. Stop three criminals. SLIP disrupts traction, REDIRECT creates a defensive field, and LAUNCH produces a kinetic burst. Abilities consume energy.</p><button class="startbtn" onclick="startGame()">START MISSION</button></div></div>
+<div id="start"><div class="card"><div class="logo">MASTRI</div><div class="sub">PROTOTYPE 7.1</div><p>ARMED ROBBERY — HARLEM</p><p class="small">Mobile landscape prototype. Stop three criminals. SLIP disrupts traction, REDIRECT creates a defensive field, and LAUNCH produces a kinetic burst. Abilities consume energy.</p><button class="startbtn" onclick="startGame()">START MISSION</button></div></div>
 <script>
 const c=document.getElementById('g'),x=c.getContext('2d'); let W,H;
 function resize(){
@@ -204,7 +212,7 @@ window.addEventListener('pageshow', normalizeViewportScale);
 let running=false, energy=100,hp=100,kills=0,score=0, redirect=0,launch=0,shake=0,flight=0,combo=0,comboTimer=0,pulse=0,startGrace=0,runnerEscaped=false,missionFailed=false,dodge=0,dodgeCd=0,hitText=[],comboFlash=0,wave=1,waveDelay=0,waveBannerTimer=0,energyRegenDelay=0,perfectRedirects=0,dodges=0,damageTaken=0,maxCombo=0,airHits=0;
 let p={x:W*.5,y:H*.76,r:22,vx:0,vy:0}, joy={x:0,y:0};
 let enemies=[], civilians=[];
-function reset(){p.x=W*.5;p.y=H*.76;energy=100;hp=100;kills=0;score=0;startGrace=2.5;runnerEscaped=false;missionFailed=false;wave=1;waveDelay=0;waveBannerTimer=0;energyRegenDelay=0;perfectRedirects=0;dodges=0;damageTaken=0;maxCombo=0;airHits=0;
+function reset(){flight=0;launch=0;redirect=0;dodge=0;dodgeCd=0;combo=0;comboTimer=0;pulse=0;shake=0;joy.x=0;joy.y=0;p.x=W*.5;p.y=H*.76;energy=100;hp=100;kills=0;score=0;startGrace=2.5;runnerEscaped=false;missionFailed=false;wave=1;waveDelay=0;waveBannerTimer=0;energyRegenDelay=0;perfectRedirects=0;dodges=0;damageTaken=0;maxCombo=0;airHits=0;
 enemies=[{x:W*.5,y:H*.28,h:3,t:'GUNMAN',slip:0,fireCd:1.25,telegraph:0,strafe:1,strafeCd:1.2},{x:W*.31,y:H*.39,h:3,t:'BRAWLER',slip:0,atkCd:1.0,windup:0},{x:W*.66,y:H*.54,h:2,t:'RUNNER',slip:0,escapeTimer:0}];
 civilians=[.12,.2,.27,.73,.81,.89].map((a,i)=>({x:W*a,y:H*(.2+(i%3)*.09)}));}
 
