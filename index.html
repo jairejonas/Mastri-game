@@ -2,9 +2,9 @@
 <html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>MASTRI — Prototype 5.0</title>
+<title>MASTRI — Prototype 5.1</title>
 
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#05070a">
@@ -15,16 +15,16 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 
 <style>
-html,body{margin:0;width:100%;height:100%;min-height:100dvh;overflow:hidden;background:#05070a;color:#fff;font-family:Arial,sans-serif;touch-action:none;-webkit-user-select:none;user-select:none}
+html,body{margin:0;width:100%;height:100%;min-height:100dvh;overflow:hidden;background:#05070a;color:#fff;font-family:Arial,sans-serif;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-text-size-adjust:100%;}
 canvas{display:block;width:100%;height:100%}
 #hud{position:fixed;inset:0;pointer-events:none}
 .top{position:absolute;left:18px;top:14px;width:250px}.name{font-size:23px;font-weight:800;letter-spacing:2px}
 .bar{height:10px;background:#20242a;margin-top:8px;border:1px solid #555}.fill{height:100%}.hp{background:#eee}.en{background:#28a9e8}
 .mission{position:absolute;right:18px;top:14px;width:270px;background:#080b0fd9;border:1px solid #555;padding:12px;border-radius:8px;font-size:14px}
 .mission b{color:#f0b92f}.tip{position:absolute;top:110px;left:18px;width:220px;background:#080b0fc9;padding:10px;border-left:3px solid #27a9e8;font-size:13px}
-#stick{position:absolute;left:30px;bottom:28px;width:125px;height:125px;border:2px solid #7778;border-radius:50%;pointer-events:auto}
+#stick{position:absolute;left:30px;bottom:28px;width:125px;height:125px;border:2px solid #7778;border-radius:50%;pointer-events:auto;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
 #nub{position:absolute;left:42px;top:42px;width:41px;height:41px;background:#ddd8;border-radius:50%}
-.btn{position:absolute;width:70px;height:70px;border-radius:50%;border:2px solid #aaa8;background:#15191fd9;color:white;font-weight:800;pointer-events:auto}
+.btn{position:absolute;width:70px;height:70px;border-radius:50%;border:2px solid #aaa8;background:#15191fd9;color:white;font-weight:800;pointer-events:auto;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
 #atk{right:25px;bottom:25px;width:84px;height:84px}#launch{right:115px;bottom:102px;border-color:#e4ad24;color:#ffc942}
 #redirect{right:195px;bottom:28px;border-color:#a348d2;color:#d784ff}#slip{right:278px;bottom:95px;border-color:#28a9e8;color:#56c8ff}
 #score{position:absolute;left:50%;transform:translateX(-50%);bottom:14px;font-size:14px}
@@ -156,7 +156,7 @@ body{
   </div>
 </div>
 
-<div id="start"><div class="card"><div class="logo">MASTRI</div><div class="sub">PROTOTYPE 5.0</div><p>ARMED ROBBERY — HARLEM</p><p class="small">Mobile landscape prototype. Stop three criminals. SLIP disrupts traction, REDIRECT creates a defensive field, and LAUNCH produces a kinetic burst. Abilities consume energy.</p><button class="startbtn" onclick="startGame()">START MISSION</button></div></div>
+<div id="start"><div class="card"><div class="logo">MASTRI</div><div class="sub">PROTOTYPE 5.1</div><p>ARMED ROBBERY — HARLEM</p><p class="small">Mobile landscape prototype. Stop three criminals. SLIP disrupts traction, REDIRECT creates a defensive field, and LAUNCH produces a kinetic burst. Abilities consume energy.</p><button class="startbtn" onclick="startGame()">START MISSION</button></div></div>
 <script>
 const c=document.getElementById('g'),x=c.getContext('2d'); let W,H;
 function resize(){
@@ -177,6 +177,30 @@ if(window.visualViewport){
   visualViewport.addEventListener('scroll',resize);
 }
 resize();
+
+// iOS browser-gesture suppression for game controls.
+document.addEventListener('gesturestart', e => e.preventDefault(), {passive:false});
+document.addEventListener('gesturechange', e => e.preventDefault(), {passive:false});
+document.addEventListener('gestureend', e => e.preventDefault(), {passive:false});
+
+let lastTouchEnd = 0;
+document.addEventListener('touchend', function(e){
+  const now = Date.now();
+  if(now - lastTouchEnd <= 350){
+    e.preventDefault();
+  }
+  lastTouchEnd = now;
+}, {passive:false});
+
+document.addEventListener('dblclick', e => e.preventDefault(), {passive:false});
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+function normalizeViewportScale(){
+  // No direct zoom API on iOS, but forcing layout reads/resizes after orientation
+  // and blocking gesture zoom prevents accidental scale changes during play.
+  resize();
+}
+window.addEventListener('pageshow', normalizeViewportScale);
 let running=false, energy=100,hp=100,kills=0,score=0, redirect=0,launch=0,shake=0,flight=0,combo=0,comboTimer=0,pulse=0,startGrace=0,runnerEscaped=false,missionFailed=false,dodge=0,dodgeCd=0,hitText=[],comboFlash=0,wave=1,waveDelay=0;
 let p={x:W*.5,y:H*.76,r:22,vx:0,vy:0}, joy={x:0,y:0};
 let enemies=[], civilians=[];
