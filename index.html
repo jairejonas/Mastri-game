@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>MASTRI — Prototype 4.3</title>
+<title>MASTRI — Prototype 5.0</title>
 
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#05070a">
@@ -142,8 +142,8 @@ body{
 <canvas id="g"></canvas>
 <div id="hud">
 <div class="top"><div class="name">MASTRI</div><div class="bar"><div id="hp" class="fill hp" style="width:100%"></div></div><div class="bar"><div id="energy" class="fill en" style="width:100%"></div></div></div>
-<div class="mission"><b>ARMED ROBBERY</b><br>Stop the criminals and protect civilians.<br><br>Criminals: <span id="kills">0</span>/3<br>Runner status: <span id="runnerStatus">ACTIVE</span><br>Civilians protected: <span id="civs">6</span>/6<br><b>Bonus:</b> No major damage</div>
-<div class="tip" id="tip"><b>TUTORIAL</b><br>You have a 2.5-second safe-start window. REDIRECT reflects successful incoming attacks back at the attacker. Watch for yellow gunfire aim-lines and orange Brawler windups. DODGE gives a brief evasive window; REDIRECT counters and returns damage. ATTACK now has light melee assist and a stronger third-hit kinetic finisher. The RUNNER will not begin escaping until the countdown ends. You now have a longer chase window; use SLIP to interrupt his escape and close the distance.</div>
+<div class="mission"><b>ARMED ROBBERY</b><br>Stop the criminals and protect civilians.<br><br>Wave: <span id="wave">1</span>/2 &nbsp; • &nbsp; Criminals stopped: <span id="kills">0</span><br>Runner status: <span id="runnerStatus">ACTIVE</span><br>Civilians protected: <span id="civs">6</span>/6<br><b>Bonus:</b> No major damage</div>
+<div class="tip" id="tip"><b>TUTORIAL</b><br>You have a 2.5-second safe-start window. REDIRECT reflects successful incoming attacks back at the attacker. Watch for yellow gunfire aim-lines and orange Brawler windups. DODGE gives a brief evasive window; REDIRECT counters and returns damage. ATTACK has light melee assist and a stronger third-hit kinetic finisher. Clear the first group, then respond to a second wave. The RUNNER will not begin escaping until the countdown ends. You now have a longer chase window; use SLIP to interrupt his escape and close the distance.</div>
 <div id="stick"><div id="nub"></div></div>
 <button id="slip" class="btn">SLIP</button><button id="redirect" class="btn">REDIRECT</button><button id="launch" class="btn">FLIGHT</button><button id="dodge" class="btn">DODGE</button><button id="atk" class="btn">ATTACK</button>
 <div id="score">Energy efficiency matters.</div><div id="comboHud" style="display:none;position:absolute;left:50%;transform:translateX(-50%);top:calc(48px + var(--safe-top));font-size:18px;font-weight:800;letter-spacing:2px;color:#f0b92f;text-shadow:0 2px 5px #000"></div><div id="threatArrow" style="display:none;position:absolute;z-index:4;font-size:28px;color:#ff5a4f;text-shadow:0 2px 5px #000;pointer-events:none">▲</div><div id="flightState" style="position:absolute;left:50%;transform:translateX(-50%);top:calc(18px + var(--safe-top));font-size:12px;letter-spacing:2px;color:#f0b92f">GROUND</div>
@@ -156,7 +156,7 @@ body{
   </div>
 </div>
 
-<div id="start"><div class="card"><div class="logo">MASTRI</div><div class="sub">PROTOTYPE 4.3</div><p>ARMED ROBBERY — HARLEM</p><p class="small">Mobile landscape prototype. Stop three criminals. SLIP disrupts traction, REDIRECT creates a defensive field, and LAUNCH produces a kinetic burst. Abilities consume energy.</p><button class="startbtn" onclick="startGame()">START MISSION</button></div></div>
+<div id="start"><div class="card"><div class="logo">MASTRI</div><div class="sub">PROTOTYPE 5.0</div><p>ARMED ROBBERY — HARLEM</p><p class="small">Mobile landscape prototype. Stop three criminals. SLIP disrupts traction, REDIRECT creates a defensive field, and LAUNCH produces a kinetic burst. Abilities consume energy.</p><button class="startbtn" onclick="startGame()">START MISSION</button></div></div>
 <script>
 const c=document.getElementById('g'),x=c.getContext('2d'); let W,H;
 function resize(){
@@ -177,10 +177,10 @@ if(window.visualViewport){
   visualViewport.addEventListener('scroll',resize);
 }
 resize();
-let running=false, energy=100,hp=100,kills=0,score=0, redirect=0,launch=0,shake=0,flight=0,combo=0,comboTimer=0,pulse=0,startGrace=0,runnerEscaped=false,missionFailed=false,dodge=0,dodgeCd=0,hitText=[],comboFlash=0;
+let running=false, energy=100,hp=100,kills=0,score=0, redirect=0,launch=0,shake=0,flight=0,combo=0,comboTimer=0,pulse=0,startGrace=0,runnerEscaped=false,missionFailed=false,dodge=0,dodgeCd=0,hitText=[],comboFlash=0,wave=1,waveDelay=0;
 let p={x:W*.5,y:H*.76,r:22,vx:0,vy:0}, joy={x:0,y:0};
 let enemies=[], civilians=[];
-function reset(){p.x=W*.5;p.y=H*.76;energy=100;hp=100;kills=0;score=0;startGrace=2.5;runnerEscaped=false;missionFailed=false;
+function reset(){p.x=W*.5;p.y=H*.76;energy=100;hp=100;kills=0;score=0;startGrace=2.5;runnerEscaped=false;missionFailed=false;wave=1;waveDelay=0;
 enemies=[{x:W*.5,y:H*.28,h:3,t:'GUNMAN',slip:0,fireCd:1.25,telegraph:0},{x:W*.31,y:H*.39,h:3,t:'BRAWLER',slip:0,atkCd:1.0,windup:0},{x:W*.66,y:H*.54,h:2,t:'RUNNER',slip:0,escapeTimer:0}];
 civilians=[.12,.2,.27,.73,.81,.89].map((a,i)=>({x:W*a,y:H*(.2+(i%3)*.09)}));}
 
@@ -398,6 +398,27 @@ if(threat){
   }else arrow.style.display='none';
 }else arrow.style.display='none';
 if(kills>=3){running=false;setTimeout(()=>{document.getElementById('start').style.display='flex';document.querySelector('.card').innerHTML=`<div class="logo">MISSION COMPLETE</div><div class="sub">HERO RATING</div><p style="font-size:40px;color:#f0b92f">${score>=600?'S':score>=400?'A':'B'}</p><p>Score: ${score}</p><button class="startbtn" onclick="startGame()">REPLAY</button>`},500)}
+// Wave 2 begins after the opening trio is stopped.
+if(running && wave===1 && enemies.every(e=>e.h<=0)){
+  waveDelay+=dt;
+  if(waveDelay>1.4){
+    wave=2;waveDelay=0;
+    enemies=[
+      {x:W*.38,y:H*.31,h:3,t:'GUNMAN',slip:0,fireCd:1.0,telegraph:0},
+      {x:W*.64,y:H*.34,h:3,t:'BRAWLER',slip:0,atkCd:.8,windup:0}
+    ];
+    startGrace=1.0;
+    hitText.push({x:W*.5,y:H*.36,text:'WAVE 2',life:1.2});
+  }
+}
+if(running && wave===2 && enemies.length && enemies.every(e=>e.h<=0)){
+  running=false;
+  document.getElementById('start').style.display='flex';
+  document.querySelector('.card').innerHTML=`<div class="logo">MISSION COMPLETE</div><p>Threats neutralized. Harlem secured.</p><p class="small">Score: ${score}</p><button class="startbtn" onclick="startGame()">REPLAY</button>`;
+}
+
+document.getElementById('wave').textContent=wave;
+
 if(missionFailed && runnerEscaped){
   document.getElementById('start').style.display='flex';
   document.querySelector('.card').innerHTML=`<div class="logo">MISSION FAILED</div><p>The runner escaped the scene.</p><p class="small">Use SLIP to interrupt his escape or close the distance quickly.</p><button class="startbtn" onclick="startGame()">RETRY</button>`;
@@ -420,7 +441,7 @@ for(const e of enemies)if(e.h>0){
  if(e.t==='BRAWLER'&&e.windup>0){
    x.strokeStyle='#ff8c42';x.lineWidth=4;x.beginPath();x.arc(e.x,e.y,27,0,Math.PI*2);x.stroke();
  }
- x.fillStyle='#111';x.fillRect(e.x-20,e.y+22,40,4);x.fillStyle='#d64b3f';x.fillRect(e.x-20,e.y+22,40*(e.h/3),4)
+ x.fillStyle='#111';x.fillRect(e.x-20,e.y+22,40,4);x.fillStyle='#d64b3f';let maxHp=e.t==='RUNNER'?2:3;x.fillRect(e.x-20,e.y+22,40*Math.max(0,e.h/maxHp),4)
 }
 if(redirect>0){x.strokeStyle='#b54ae8';x.lineWidth=5;x.beginPath();x.arc(p.x,p.y,43,0,Math.PI*2);x.stroke()}
 if(dodge>0){
