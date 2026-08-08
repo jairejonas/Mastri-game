@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>MASTRI — Prototype 4.0</title>
+<title>MASTRI — Prototype 4.1</title>
 
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#05070a">
@@ -134,7 +134,7 @@ body{
   #atk{width:70px;height:70px}
   #launch{right:calc(100px + var(--safe-right));bottom:calc(88px + var(--safe-bottom))}
   #redirect{right:calc(170px + var(--safe-right));bottom:calc(24px + var(--safe-bottom))}
-  #slip{right:calc(235px + var(--safe-right));bottom:calc(83px + var(--safe-bottom))}
+  #slip{right:calc(235px + var(--safe-right));bottom:calc(83px + var(--safe-bottom))}#dodge{right:calc(92px + var(--safe-right));bottom:calc(18px + var(--safe-bottom));width:50px;height:50px}
 }
 
 </style></head>
@@ -143,9 +143,9 @@ body{
 <div id="hud">
 <div class="top"><div class="name">MASTRI</div><div class="bar"><div id="hp" class="fill hp" style="width:100%"></div></div><div class="bar"><div id="energy" class="fill en" style="width:100%"></div></div></div>
 <div class="mission"><b>ARMED ROBBERY</b><br>Stop the criminals and protect civilians.<br><br>Criminals: <span id="kills">0</span>/3<br>Runner status: <span id="runnerStatus">ACTIVE</span><br>Civilians protected: <span id="civs">6</span>/6<br><b>Bonus:</b> No major damage</div>
-<div class="tip" id="tip"><b>TUTORIAL</b><br>You have a 2.5-second safe-start window. REDIRECT reflects successful incoming attacks back at the attacker. Watch for yellow gunfire aim-lines and orange Brawler windups. The RUNNER will not begin escaping until the countdown ends. You now have a longer chase window; use SLIP to interrupt his escape and close the distance.</div>
+<div class="tip" id="tip"><b>TUTORIAL</b><br>You have a 2.5-second safe-start window. REDIRECT reflects successful incoming attacks back at the attacker. Watch for yellow gunfire aim-lines and orange Brawler windups. DODGE gives a brief evasive window; REDIRECT counters and returns damage. The RUNNER will not begin escaping until the countdown ends. You now have a longer chase window; use SLIP to interrupt his escape and close the distance.</div>
 <div id="stick"><div id="nub"></div></div>
-<button id="slip" class="btn">SLIP</button><button id="redirect" class="btn">REDIRECT</button><button id="launch" class="btn">FLIGHT</button><button id="atk" class="btn">ATTACK</button>
+<button id="slip" class="btn">SLIP</button><button id="redirect" class="btn">REDIRECT</button><button id="launch" class="btn">FLIGHT</button><button id="dodge" class="btn">DODGE</button><button id="atk" class="btn">ATTACK</button>
 <div id="score">Energy efficiency matters.</div><div id="threatArrow" style="display:none;position:absolute;z-index:4;font-size:28px;color:#ff5a4f;text-shadow:0 2px 5px #000;pointer-events:none">▲</div><div id="flightState" style="position:absolute;left:50%;transform:translateX(-50%);top:calc(18px + var(--safe-top));font-size:12px;letter-spacing:2px;color:#f0b92f">GROUND</div>
 </div>
 
@@ -156,7 +156,7 @@ body{
   </div>
 </div>
 
-<div id="start"><div class="card"><div class="logo">MASTRI</div><div class="sub">PROTOTYPE 4.0</div><p>ARMED ROBBERY — HARLEM</p><p class="small">Mobile landscape prototype. Stop three criminals. SLIP disrupts traction, REDIRECT creates a defensive field, and LAUNCH produces a kinetic burst. Abilities consume energy.</p><button class="startbtn" onclick="startGame()">START MISSION</button></div></div>
+<div id="start"><div class="card"><div class="logo">MASTRI</div><div class="sub">PROTOTYPE 4.1</div><p>ARMED ROBBERY — HARLEM</p><p class="small">Mobile landscape prototype. Stop three criminals. SLIP disrupts traction, REDIRECT creates a defensive field, and LAUNCH produces a kinetic burst. Abilities consume energy.</p><button class="startbtn" onclick="startGame()">START MISSION</button></div></div>
 <script>
 const c=document.getElementById('g'),x=c.getContext('2d'); let W,H;
 function resize(){
@@ -177,7 +177,7 @@ if(window.visualViewport){
   visualViewport.addEventListener('scroll',resize);
 }
 resize();
-let running=false, energy=100,hp=100,kills=0,score=0, redirect=0,launch=0,shake=0,flight=0,combo=0,comboTimer=0,pulse=0,startGrace=0,runnerEscaped=false,missionFailed=false;
+let running=false, energy=100,hp=100,kills=0,score=0, redirect=0,launch=0,shake=0,flight=0,combo=0,comboTimer=0,pulse=0,startGrace=0,runnerEscaped=false,missionFailed=false,dodge=0,dodgeCd=0;
 let p={x:W*.5,y:H*.76,r:22,vx:0,vy:0}, joy={x:0,y:0};
 let enemies=[], civilians=[];
 function reset(){p.x=W*.5;p.y=H*.76;energy=100;hp=100;kills=0;score=0;startGrace=2.5;runnerEscaped=false;missionFailed=false;
@@ -223,6 +223,16 @@ function attack(){
 }
 function slip(){let [e,d]=nearest();if(e&&d<230&&spend(12)){e.slip=e.t==='RUNNER'?3.2:2.5;score+=25}}
 function redir(){if(spend(16)){redirect=.8;score+=15}}
+function dodgeFn(){
+ if(dodgeCd<=0 && flight<=0){
+   dodge=.28;dodgeCd=.8;
+   let mx=joy.x,my=joy.y,m=Math.hypot(mx,my);
+   if(m<.15){mx=0;my=1;m=1}
+   p.x+=mx/m*48;p.y+=my/m*48;
+   p.x=Math.max(20,Math.min(W-20,p.x));p.y=Math.max(H*.18,Math.min(H-20,p.y));
+   shake=2;
+ }
+}
 function launchFn(){
   // Launch is a traversal control only.
   // Pressing it while flying must always end flight, regardless of nearby enemies.
@@ -239,7 +249,7 @@ function launchFn(){
     pulse=.18;
   }
 }
-[['atk',attack],['slip',slip],['redirect',redir],['launch',launchFn]].forEach(([id,f])=>{let b=document.getElementById(id);b.onpointerdown=e=>{e.preventDefault();f()}});
+[['atk',attack],['slip',slip],['redirect',redir],['launch',launchFn],['dodge',dodgeFn]].forEach(([id,f])=>{let b=document.getElementById(id);b.onpointerdown=e=>{e.preventDefault();f()}});
 const stick=document.getElementById('stick'),nub=document.getElementById('nub');let sid=null;
 function jset(e){let r=stick.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2),m=Math.hypot(dx,dy),lim=45;if(m>lim){dx*=lim/m;dy*=lim/m}joy.x=dx/lim;joy.y=dy/lim;nub.style.transform=`translate(${dx}px,${dy}px)`}
 stick.onpointerdown=e=>{sid=e.pointerId;stick.setPointerCapture(sid);jset(e)};stick.onpointermove=e=>{if(e.pointerId==sid)jset(e)};stick.onpointerup=e=>{sid=null;joy.x=joy.y=0;nub.style.transform=''}
@@ -256,7 +266,7 @@ x.fillStyle='#d6a94a55';for(let b=0;b<10;b++){for(let j=0;j<3;j++)x.fillRect(b*W
 }
 function circle(o,col,label){x.fillStyle=col;x.beginPath();x.arc(o.x,o.y,o.r||15,0,Math.PI*2);x.fill();if(label){x.fillStyle='#fff';x.font='11px Arial';x.textAlign='center';x.fillText(label,o.x,o.y-24)}}
 function update(dt){
-comboTimer=Math.max(0,comboTimer-dt); pulse=Math.max(0,pulse-dt); startGrace=Math.max(0,startGrace-dt);
+comboTimer=Math.max(0,comboTimer-dt); pulse=Math.max(0,pulse-dt); startGrace=Math.max(0,startGrace-dt); dodge=Math.max(0,dodge-dt); dodgeCd=Math.max(0,dodgeCd-dt);
 if(flight>0){energy-=10*dt;if(energy<=0.5){energy=0;flight=0;launch=.12}}
 let speed=190*(launch>0?2.2:(flight>0?1.55:1));p.x+=joy.x*speed*dt;p.y+=joy.y*speed*dt;p.x=Math.max(20,Math.min(W-20,p.x));p.y=Math.max(H*.18,Math.min(H-20,p.y));
 energy=Math.min(100,energy+6*dt);redirect=Math.max(0,redirect-dt);launch=Math.max(0,launch-dt);
@@ -292,7 +302,7 @@ if(e.t==='GUNMAN'&&startGrace<=0&&e.h>0){
       if(redirect>0){
         e.h-=1;score+=55;shake=3;pulse=.22;
         if(e.h<=0){kills++;score+=150}
-      }else{hp-=5;shake=4}
+      }else if(dodge<=0){hp-=5;shake=4}else{score+=20}
       e.fireCd=1.35;
     }
   }else if(d<330&&e.fireCd<=0){
@@ -312,7 +322,7 @@ if(e.t==='BRAWLER'){
           let bdx=p.x-e.x,bdy=p.y-e.y,bdm=Math.hypot(bdx,bdy)||1;
           e.x-=bdx/bdm*34;e.y-=bdy/bdm*34;
           if(e.h<=0){kills++;score+=150}
-        }else{hp-=8;shake=6;e.atkCd=1.15}
+        }else if(dodge<=0){hp-=8;shake=6;e.atkCd=1.15}else{score+=20;e.atkCd=.7}
       }else e.atkCd=.55;
     }
   }else if(startGrace<=0 && d<62 && e.atkCd<=0){
