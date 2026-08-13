@@ -1,0 +1,27 @@
+{
+  "name": "Signo Prototype 16.0",
+  "short_name": "Signo",
+  "description": "Signo mobile gameplay prototype",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape-primary",
+  "background_color": "#05070a",
+  "theme_color": "#05070a",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ]
+}
