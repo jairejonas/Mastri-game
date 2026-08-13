@@ -1,0 +1,31 @@
+name: Deploy Signo Dev
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: signo-dev-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout dev build
+        uses: actions/checkout@v4
+
+      - name: Publish dev build to gh-pages/dev
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: .
+          destination_dir: dev
+          keep_files: true
+          exclude_assets: '.github,PROTOTYPE_16_PLAN.md,README.md,README.txt,README_IPHONE.txt'
