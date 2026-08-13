@@ -1,7 +1,7 @@
 {
-  "name": "Mastri Prototype 15.0",
-  "short_name": "Mastri",
-  "description": "Mastri mobile gameplay prototype",
+  "name": "Signo Prototype 16.0",
+  "short_name": "Signo",
+  "description": "Signo mobile gameplay prototype",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
