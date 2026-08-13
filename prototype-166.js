@@ -1,0 +1,1 @@
+(()=>{const a=attack;attack=function(){const[e]=near(),h=e?e.h:0,c=combo;a();if(e&&e.h<h){e.tele=e.wind=0;e.rec=Math.max(e.rec,c===2?.75:.5);const x=e.x-P.x,y=e.y-P.y,m=Math.hypot(x,y)||1,f=c===2?20:8;e.x+=x/m*f;e.y+=y/m*f;if(c===2)T.push({x:e.x,y:e.y-42,s:'STAGGER',t:.7})}};document.getElementById('atk').onpointerdown=attack;})();
